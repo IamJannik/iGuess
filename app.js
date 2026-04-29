@@ -117,10 +117,10 @@ function checkGuess() {
         input.classList.add('correct');
         correctCount++;
         addToGrid(current, true);
-        input.disabled = true;
+        input.readonly = true;
 
         setTimeout(() => {
-            input.disabled = false;
+            input.readonly = false;
             nextFlag();
         }, 800);
     }
