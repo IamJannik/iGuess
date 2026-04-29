@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iGuess</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="content">
+    <div class="topbar">
+        <div class="logo">iGuess</div>
+        <div class="topbar-right">
+            <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">☀</button>
+            <div class="lang-dropdown" id="lang-dropdown">
+                <button class="lang-selected" id="lang-selected" onclick="toggleLangDropdown()">
+                    <span id="lang-selected-label">EN</span>
+                </button>
+                <div class="lang-options" id="lang-options"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="region-toggle">
+        <button class="region-btn active" data-region="world" onclick="setRegion('world')"></button>
+        <button class="region-btn" data-region="eu" onclick="setRegion('eu')"></button>
+        <button class="region-btn" data-region="am" onclick="setRegion('am')"></button>
+        <button class="region-btn" data-region="as" onclick="setRegion('as')"></button>
+        <button class="region-btn" data-region="af" onclick="setRegion('af')"></button>
+        <button class="region-btn" data-region="oc" onclick="setRegion('oc')"></button>
+    </div>
+
+    <!-- Game -->
+    <div id="game">
+        <div class="card">
+            <div class="flag-container show" id="flag-display"></div>
+            <div class="input-row">
+                <input class="guess-input" id="guess-input" autocomplete="off" spellcheck="false" placeholder="Type country name…" />
+            </div>
+            <div>
+                <button class="small-btn tooltip" id="btn-hint" onclick="showHint()" data-tooltip="Tab">Hint</button>
+                <button class="small-btn tooltip" id="btn-skip" onclick="skipFlag()" data-tooltip="Enter">Skip</button>
+            </div>
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill" style="width:0"></div>
+            </div>
+            <div class="progress-label">
+                <div id="progress-time"></div>
+                <div id="progress-score">00:00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finish -->
+    <div class="finish-screen" id="finish-screen">
+        <div class="finish-emoji">🎉</div>
+        <div class="finish-title" id="finish-title">Done!</div>
+        <div class="finish-sub">
+            <div id="finish-time"></div>
+            <div id="finish-score"></div>
+        </div>
+        <button class="restart-btn" id="btn-restart" onclick="startGame()"></button>
+    </div>
+
+    <!-- Guessed flags -->
+    <div class="flag-grid" id="flag-grid"></div>
+
+
+    <!--<div class="stats">-->
+    <!--    <div class="stat-pill" id="stat-correct"></div>-->
+    <!--    <div class="stat-pill" id="stat-remaining"></div>-->
+    <!--</div>-->
+</div>
+<script src="data/flags.js"></script>
+<script src="data/i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
