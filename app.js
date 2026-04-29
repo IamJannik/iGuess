@@ -131,10 +131,10 @@ function skipFlag() {
     const input = document.getElementById('guess-input');
     input.value = current[lang][0];
     input.classList.add('wrong');
-    input.disabled = true;
+    input.readonly = true;
     addToGrid(current, false);
     setTimeout(() => {
-        input.disabled = false;
+        input.readonly = false;
         nextFlag();
     }, 1400);
 }
