@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>iGuess - Flags</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iGuess</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta charset="UTF-8">
+    <meta name="description" content="iGuess is a flag game where you can guess and learn the flags of the world.">
+    <meta name="keywords" content="Flag, Flags, Quiz, Guess, iGuess, Learn, Free, World">
+    <meta name="author" content="IamJannik">
     <link rel="icon" type="image/x-icon" href="/img/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +19,9 @@
     <div class="topbar">
         <div class="logo">iGuess</div>
         <div class="topbar-right">
-            <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">☀</button>
+            <div class="theme-toggle">
+                <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()">L</button>
+            </div>
             <div class="lang-dropdown" id="lang-dropdown">
                 <button class="lang-selected" id="lang-selected" onclick="toggleLangDropdown()">
                     <span id="lang-selected-label">EN</span>
@@ -40,7 +45,7 @@
         <div class="card">
             <div class="flag-container show" id="flag-display"></div>
             <div class="input-row">
-                <input class="guess-input" id="guess-input" autocomplete="off" spellcheck="false" placeholder="Type country name…" />
+                <label hidden for="guess-input"></label><input class="guess-input" id="guess-input" autocomplete="off" spellcheck="false" placeholder="Type country name…" />
             </div>
             <div>
                 <button class="small-btn tooltip" id="btn-hint" onclick="showHint()" data-tooltip="Tab">Hint</button>

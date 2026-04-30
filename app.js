@@ -17,7 +17,7 @@ function shuffle(arr) {
 }
 
 function renderFlagInto(el, flag) {
-    el.innerHTML = `<img src="./flags/${flag.code}.svg" style="width:1.2em;height:1.2em;">`;
+    el.innerHTML = `<img src="./flags/${flag.code}.svg" style="width:1.2em;height:1.2em;" alt="flag" draggable="false">`;
     //twemoji.parse(el, { folder: 'svg', ext: '.svg' });
 }
 
@@ -129,6 +129,7 @@ function checkGuess() {
 function skipFlag() {
     if (!current) return;
     const input = document.getElementById('guess-input');
+    if (input.readonly) return;
     input.value = current[lang][0];
     input.classList.add('wrong');
     input.readonly = true;
@@ -171,7 +172,7 @@ function showFinish() {
 
 function toggleTheme() {
     const light = document.body.classList.toggle('light');
-    document.getElementById('theme-toggle').textContent = light ? '☾' : '☀';
+    document.getElementById('theme-toggle').textContent = light ? 'D' : 'L';
 }
 
 function toggleLangDropdown() {
