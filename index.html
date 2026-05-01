@@ -20,7 +20,7 @@
         <div class="logo">iGuess</div>
         <div class="topbar-right">
             <div class="theme-toggle">
-                <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()">L</button>
+                <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()">O</button>
             </div>
             <div class="lang-dropdown" id="lang-dropdown">
                 <button class="lang-selected" id="lang-selected" onclick="toggleLangDropdown()">
@@ -32,7 +32,7 @@
     </div>
 
     <div class="region-toggle">
-        <button class="region-btn active" data-region="world" onclick="setRegion('world')"></button>
+        <button class="region-btn" data-region="world" onclick="setRegion('world')"></button>
         <button class="region-btn" data-region="eu" onclick="setRegion('eu')"></button>
         <button class="region-btn" data-region="am" onclick="setRegion('am')"></button>
         <button class="region-btn" data-region="as" onclick="setRegion('as')"></button>
@@ -47,7 +47,7 @@
             <div class="input-row">
                 <label hidden for="guess-input"></label><input class="guess-input" id="guess-input" autocomplete="off" spellcheck="false" placeholder="Type country name…" />
             </div>
-            <div>
+            <div class="bottom-options">
                 <button class="small-btn tooltip" id="btn-hint" onclick="showHint()" data-tooltip="Tab">Hint</button>
                 <button class="small-btn tooltip" id="btn-skip" onclick="skipFlag()" data-tooltip="Enter">Skip</button>
             </div>

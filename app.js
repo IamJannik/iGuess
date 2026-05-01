@@ -6,6 +6,32 @@ let correctCount = 0;
 let total = 0;
 let timer = 0;
 let timerActive = false;
+let hints = 0;
+let guessedHistory = [];
+
+const STORAGE_KEY = 'iguess.state';
+
+function saveState() {
+    try {
+        const state = {
+            lang,
+            region,
+            light: document.body.classList.contains('light'),
+            queueCodes: queue.map(f => f.code),
+            currentCode: current ? current.code : null,
+            guessed: guessedHistory,
+            correctCount,
+            total,
+            timer,
+            finished: total > 0 && queue.length === 0 && !current
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+}
+
+function loadState() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { return null; }
+}
 
 function shuffle(arr) {
     const a = [...arr];
@@ -37,7 +63,6 @@ function addToGrid(flag, guessed) {
 }
 
 function setRegion(r) {
-    if (region === r) return;
     region = r;
     document.querySelectorAll('.region-btn').forEach(b =>
         b.classList.toggle('active', b.dataset.region === r)
@@ -52,6 +77,7 @@ function startGame() {
     total = queue.length;
 
     correctCount = 0;
+    guessedHistory = [];
     document.getElementById('flag-grid').innerHTML = '';
     document.getElementById('game').style.display = 'block';
     document.getElementById('finish-screen').classList.remove('visible');
@@ -62,10 +88,7 @@ function startGame() {
 }
 
 function nextFlag() {
-    if (current) {
-        const maps = document.querySelectorAll(`[class="${current["en"][0]}"], [name="${current["en"][0]}"]`);
-        maps.forEach(map => {map.style.fill = "var(--muted)";})
-    }
+    hints = 0;
 
     if (queue.length === 0) {
         showFinish();
@@ -89,6 +112,7 @@ function nextFlag() {
     input.placeholder = t.placeholder;
     input.focus();
     updateProgress();
+    saveState();
 }
 
 function normalize(str) {
@@ -116,11 +140,11 @@ function checkGuess() {
         input.placeholder = t.placeholder;
         input.classList.add('correct');
         correctCount++;
-        addToGrid(current, true);
         input.readonly = true;
-
+        guessedHistory.push({ code: current.code, guessed: true });
         setTimeout(() => {
             input.readonly = false;
+            addToGrid(current, true);
             nextFlag();
         }, 800);
     }
@@ -133,21 +157,21 @@ function skipFlag() {
     input.value = current[lang][0];
     input.classList.add('wrong');
     input.readonly = true;
-    addToGrid(current, false);
+    guessedHistory.push({ code: current.code, guessed: false });
     setTimeout(() => {
         input.readonly = false;
+        addToGrid(current, false);
         nextFlag();
-    }, 1400);
+    }, 1200);
 }
 
 function showHint() {
     if (!current) return;
+    hints++;
     const input = document.getElementById('guess-input');
     input.value = '';
     const country = current[lang][0];
-    input.placeholder = country[0] + country
-        .slice(1)
-        .replace(/[^\s-]/g, "_");
+    input.placeholder = country.slice(0, hints) + country.slice(hints).replace(/\p{L}/gu, "_");
     input.focus();
 }
 
@@ -159,6 +183,7 @@ function updateProgress() {
 }
 
 function showFinish() {
+    current = null;
     document.getElementById('game').style.display = 'none';
     const fs = document.getElementById('finish-screen');
     fs.classList.add('visible');
@@ -168,11 +193,13 @@ function showFinish() {
     document.getElementById('finish-score').textContent = `${correctCount} / ${total}`;
     document.getElementById('btn-restart').textContent = t.restart;
     timerActive = false;
+    saveState();
 }
 
 function toggleTheme() {
     const light = document.body.classList.toggle('light');
-    document.getElementById('theme-toggle').textContent = light ? 'D' : 'L';
+    document.getElementById('theme-toggle').textContent = light ? 'C' : 'O';
+    saveState();
 }
 
 function toggleLangDropdown() {
@@ -206,7 +233,7 @@ function buildLangDropdown() {
         btn.className = 'lang-option';
         btn.dataset.lang = l.code;
         btn.textContent = l.name;
-        btn.onclick = () => { setLang(l.code); closeLangDropdown(); };
+        btn.onclick = () => { setLang(l.code); saveState(); closeLangDropdown(); };
         container.appendChild(btn);
     });
 }
@@ -242,7 +269,62 @@ document.addEventListener('click', e => {
     }
 });
 
+function restoreFromState(state) {
+    const byCode = Object.fromEntries(ALL_FLAGS.map(f => [f.code, f]));
+
+    if (state.light) {
+        document.body.classList.add('light');
+        document.getElementById('theme-toggle').textContent = 'C';
+    }
+    setLang(state.lang || 'en');
+
+    region = state.region || 'world';
+    document.querySelectorAll('.region-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.region === region)
+    );
+
+    queue = (state.queueCodes || []).map(c => byCode[c]).filter(Boolean);
+    total = state.total || 0;
+    correctCount = state.correctCount || 0;
+    timer = state.timer || 0;
+    guessedHistory = state.guessed || [];
+
+    document.getElementById('flag-grid').innerHTML = '';
+    guessedHistory.forEach(g => {
+        const f = byCode[g.code];
+        if (!f) return;
+        addToGrid(f, g.guessed);
+    });
+
+    document.getElementById('progress-time').textContent = `${String(Math.floor(timer / 60)).padStart(2, "0")}:${String(timer % 100).padStart(2, "0")}`;
+
+    if (state.finished || (total > 0 && queue.length === 0 && !state.currentCode)) {
+        current = null;
+        showFinish();
+        return true;
+    }
+
+    if (state.currentCode && byCode[state.currentCode]) {
+        current = byCode[state.currentCode];
+        const flagEl = document.getElementById('flag-display');
+        renderFlagInto(flagEl, current);
+        flagEl.classList.remove('hide');
+        flagEl.classList.add('show');
+        document.getElementById('game').style.display = 'block';
+        document.getElementById('finish-screen').classList.remove('visible');
+        updateProgress();
+        document.getElementById('guess-input').focus();
+        timerActive = timer > 0;
+        return true;
+    }
+
+    return false;
+}
+
 buildLangDropdown();
-setLang('en');
+const savedState = loadState();
+if (!savedState || !restoreFromState(savedState)) {
+    setLang('en');
+    startGame();
+}
 setInterval(updateTimer, 1000);
-startGame();
